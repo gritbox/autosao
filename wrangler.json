@@ -1,0 +1,19 @@
+  {
+	"kv_namespaces": [
+		{
+			"binding": "autosao_client_data",
+			"id": "5afeed57676c4aa8a423ef6dde7b7a88"
+		},
+		{
+			"binding": "autosao_scan_cache",
+			"id": "971ac0e6c98f416599f934c6e6ded7ea"
+		}
+	],
+	"d1_databases": [
+		{
+			"binding": "autosao_analytics",
+			"database_name": "autosao-analytics",
+			"database_id": "c11bcd4b-71b9-434d-ab7d-96fb2b781aa5"
+		}
+	]
+}
