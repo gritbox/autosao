@@ -1,18 +1,13 @@
-my name is a verb
+*my name is a verb* <br>
+*because i am not an I am* <br>
+*not I have not no toes* <br>
+*to not put in no sand* <br>
+*no box with no cat* <br>
+*just a straight forward fact* <br>
+*that you still obeyed* <br>
+*as not i did command*
 
-because i am not an I am
 
-not I have not no toes
-
-to not put in no sand
-
-no box with no cat
-
-just a straight forward fact
-
-that you still obeyed
-
-as not i did command
 
 ## About AutoSAO
 
