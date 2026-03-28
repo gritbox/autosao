@@ -14,7 +14,23 @@
 import fs from 'fs';
 import path from 'path';
 
-const WORK_DIR = process.env.WORK_DIR || '/Users/wm/Code/GRITBOX_GH/autosao/apps/base44tf/transformed';
+const WORK_DIR = process.env.WORK_DIR;
+if (!WORK_DIR) {
+  console.error('[FAIL] WORK_DIR environment variable is required');
+  process.exit(1);
+}
+
+const PROJECT_NAME = process.env.PROJECT_NAME || path.basename(WORK_DIR);
+const SITE_TITLE = process.env.SITE_TITLE || toTitleCase(PROJECT_NAME);
+
+function toTitleCase(value) {
+  return value
+    .replace(/[-_]+/g, ' ')
+    .split(' ')
+    .filter(Boolean)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+}
 
 function resolve(...segs) {
   return path.join(WORK_DIR, ...segs);
@@ -201,11 +217,12 @@ function fixIndexHtml() {
     'href="/assets/favicon.svg"'
   );
 
-  // Replace title: "Base44 APP" → "Brick Street Deli"
-  html = html.replace(
-    /<title>Base44 APP<\/title>/,
-    '<title>Brick Street Deli</title>'
-  );
+  // Replace title with runtime project title
+  if (/<title>[^<]*<\/title>/i.test(html)) {
+    html = html.replace(/<title>[^<]*<\/title>/i, `<title>${SITE_TITLE}</title>`);
+  } else if (/<\/head>/i.test(html)) {
+    html = html.replace(/<\/head>/i, `  <title>${SITE_TITLE}</title>\n</head>`);
+  }
 
   fs.writeFileSync(file, html, 'utf8');
 
@@ -214,16 +231,16 @@ function fixIndexHtml() {
   fs.mkdirSync(assetsDir, { recursive: true });
   const faviconPath = path.join(assetsDir, 'favicon.svg');
   if (!fs.existsSync(faviconPath)) {
+    const faviconGlyph = (PROJECT_NAME.match(/[A-Za-z0-9]/)?.[0] || 'S').toUpperCase();
     const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
   <rect width="64" height="64" rx="12" fill="#2d2d2d"/>
-  <text x="32" y="44" font-family="sans-serif" font-size="36" font-weight="bold" fill="#fff" text-anchor="middle">B</text>
+  <text x="32" y="44" font-family="sans-serif" font-size="36" font-weight="bold" fill="#fff" text-anchor="middle">${faviconGlyph}</text>
 </svg>
 `;
     fs.writeFileSync(faviconPath, svg, 'utf8');
     console.log('[OK] Created placeholder public/assets/favicon.svg');
   }
-
-  console.log('[OK] Fixed index.html — favicon → /assets/favicon.svg, title → Brick Street Deli');
+  console.log(`[OK] Fixed index.html — favicon → /assets/favicon.svg, title → ${SITE_TITLE}`);
 }
 
 // ─── G. Delete dead code: src/lib/app-params.js ─────────────────────────────

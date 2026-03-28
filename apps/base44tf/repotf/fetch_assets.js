@@ -14,7 +14,11 @@ import https from 'https';
 import http from 'http';
 import crypto from 'crypto';
 
-const WORK_DIR = process.env.WORK_DIR || '/Users/wm/Code/GRITBOX_GH/autosao/apps/base44tf/transformed';
+const WORK_DIR = process.env.WORK_DIR;
+if (!WORK_DIR) {
+  console.error('[FAIL] WORK_DIR environment variable is required');
+  process.exit(1);
+}
 const ASSETS_DIR = path.join(WORK_DIR, 'public', 'assets');
 const EXTENSIONS = /\.(jsx|js|ts|tsx|css|html)$/;
 const URL_PATTERN = /https:\/\/media\.base44\.com\/[^\s"'`)]+/g;

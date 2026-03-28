@@ -1,17 +1,43 @@
 #!/bin/bash
-set -e
+set -euo pipefail
 
-# ─── Configurable paths ─────────────────────────────────────────────────────
-SOURCE_DIR="${SOURCE_DIR:-/Users/wm/Code/GRITBOX_GH/autosao/apps/base44tf/sampleRepo/repo}"
-WORK_DIR="${WORK_DIR:-/Users/wm/Code/GRITBOX_GH/autosao/apps/base44tf/transformed}"
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/../../.." && pwd)"
 
-export WORK_DIR  # propagate to child scripts
+SOURCE_PATH="${SOURCE_PATH:-}"
+OUTPUT_BASE="${OUTPUT_BASE:-$REPO_ROOT/sites}"
+PROJECT_NAME="${PROJECT_NAME:-}"
+TARGET_URL="${TARGET_URL:-}"
+WORK_DIR="${WORK_DIR:-}"
+
+if [ -z "$SOURCE_PATH" ]; then
+  echo "[FAIL] SOURCE_PATH is required." >&2
+  exit 1
+fi
+
+[ -d "$SOURCE_PATH" ] || { echo "[FAIL] SOURCE_PATH does not exist: $SOURCE_PATH" >&2; exit 1; }
+
+if [ -z "$PROJECT_NAME" ]; then
+  PROJECT_NAME="$(basename "$SOURCE_PATH")"
+fi
+
+if [ -z "$TARGET_URL" ]; then
+  TARGET_URL="https://${PROJECT_NAME}.pages.dev"
+fi
+
+if [ -z "$WORK_DIR" ]; then
+  WORK_DIR="${OUTPUT_BASE%/}/${PROJECT_NAME}"
+fi
+
+export SOURCE_PATH OUTPUT_BASE PROJECT_NAME TARGET_URL WORK_DIR
 
 echo "========================================"
 echo "  transform.sh — Base44 Repo Transform"
 echo "========================================"
-echo "Source:  $SOURCE_DIR"
+echo "Project: $PROJECT_NAME"
+echo "Target:  $TARGET_URL"
+echo "Source:  $SOURCE_PATH"
+echo "Output:  $OUTPUT_BASE"
 echo "Working: $WORK_DIR"
 echo "Scripts: $SCRIPT_DIR"
 echo "========================================"
@@ -19,10 +45,12 @@ echo "========================================"
 # ─── Step 1: Copy source → working directory ────────────────────────────────
 echo ""
 echo "[Step 1/5] Copying source to working directory..."
+mkdir -p "$OUTPUT_BASE"
 if [ -d "$WORK_DIR" ]; then
   rm -rf "$WORK_DIR"
 fi
-cp -R "$SOURCE_DIR" "$WORK_DIR"
+mkdir -p "$WORK_DIR"
+cp -R "$SOURCE_PATH"/. "$WORK_DIR"/
 # Remove node_modules if copied
 rm -rf "$WORK_DIR/node_modules"
 rm -rf "$WORK_DIR/.git"

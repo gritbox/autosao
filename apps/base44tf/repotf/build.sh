@@ -1,7 +1,20 @@
 #!/bin/bash
-set -e
+set -euo pipefail
 
-WORK_DIR="${WORK_DIR:-/Users/wm/Code/GRITBOX_GH/autosao/apps/base44tf/transformed}"
+PROJECT_NAME="${PROJECT_NAME:-}"
+OUTPUT_BASE="${OUTPUT_BASE:-}"
+WORK_DIR="${WORK_DIR:-}"
+
+if [ -z "$WORK_DIR" ] && [ -n "$PROJECT_NAME" ] && [ -n "$OUTPUT_BASE" ]; then
+  WORK_DIR="${OUTPUT_BASE%/}/${PROJECT_NAME}"
+fi
+
+if [ -z "$WORK_DIR" ]; then
+  echo "[FAIL] WORK_DIR is required (or set PROJECT_NAME and OUTPUT_BASE)." >&2
+  exit 1
+fi
+
+[ -d "$WORK_DIR" ] || { echo "[FAIL] WORK_DIR does not exist: $WORK_DIR" >&2; exit 1; }
 
 echo "=== build.sh ==="
 echo "Working directory: $WORK_DIR"
